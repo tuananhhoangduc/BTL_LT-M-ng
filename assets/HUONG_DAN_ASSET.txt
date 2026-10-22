@@ -1,0 +1,35 @@
+====================================================================
+HUONG DAN THEM ASSET HINH ANH & AM THANH CHO GAME DAU TRI SAC MAU
+====================================================================
+
+Game da duoc tich hop san AssetLoader tu dong. 
+Ban co the tai cac anh PNG (nen trong suot transparent) ve va doi ten 
+dat vao thu muc nay (assets/) de game tu dong ap dung:
+
+1. CAC FILE HINH ANH HO TRO:
+   - logo.png           : Logo chinh cua game (thay the chu Dau Tri Sac Mau)
+   - mascot_red.png     : Linh vat chien binh do ben trai
+   - mascot_blue.png    : Linh vat thien than xanh ben phai
+   - piece_red.png      : Quan co mau do (dang vien ngoc hoac nhan vat)
+   - piece_blue.png     : Quan co mau xanh
+   - avatar_default.png : Avatar nguoi choi
+   - trophy.png         : Cup chien thang
+
+2. CAC NGUON TAI ASSET GAME MIEN PHI 100% DEP NHAT:
+   * Kenney Game Assets (Cuc dep, mien phi ban quyen CC0):
+     https://kenney.nl/assets
+     -> Tim: "Board Game Assets", "Puzzle Pack", "UI Pack"
+
+   * Flaticon (Icon game 3D, cup, huy chuong, avatar):
+     https://www.flaticon.com
+     -> Tim: "game trophy 3d", "avatar cute", "board game piece"
+
+   * OpenGameArt (Sprites & Backgrounds hoat hinh):
+     https://opengameart.org
+
+   * Mixkit (Am thanh game cuc dinh):
+     https://mixkit.co/free-sound-effects/game/
+
+(Neu khong bo file anh nao vao thu muc nay, game van tu dong ve 
+do hoa vector 3D sieu net bang Graphics2D, khong lo bi loi).
+
