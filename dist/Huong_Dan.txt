@@ -1,0 +1,21 @@
+====================================================
+          HƯỚNG DẪN CHƠI GAME ĐẤU TRÍ SẮC MÀU
+====================================================
+
+1. YÊU CẦU:
+- Máy tính đã cài đặt Java (JRE/JDK 17 trở lên).
+
+2. CÁCH VÀO CHƠI:
+- Nhấp đúp vào file "Chay_Game.bat" (hoặc "ColorMatch-Client.jar") để mở game.
+- Tại ô "Máy chủ (IP)":
+    + Nếu chơi cùng mạng WiFi với chủ phòng: Nhập địa chỉ IP WiFi của chủ phòng (ví dụ: 192.168.1.x).
+    + Nếu chơi qua Radmin VPN: Nhập địa chỉ IP Radmin VPN của chủ phòng (ví dụ: 26.x.x.x).
+    + Nếu chủ phòng dùng ngrok: Nhập tên miền ngrok được cấp.
+- Nhập Tài khoản và Mật khẩu:
+    + Nếu chưa có tài khoản: Nhập tên & mật khẩu rồi nhấn nút "Đăng ký".
+    + Nhấn "Đăng nhập" để vào sảnh chờ.
+
+3. THÁCH ĐẤU:
+- Khi vào sảnh chờ, bấm chọn tên đối thủ đang online rồi nhấn "Thách đấu".
+- Người được thách đấu nhấn "OK" để bắt đầu ván đấu.
+
