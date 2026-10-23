@@ -2,6 +2,7 @@ package server;
 
 import common.MessageType;
 import common.NetworkMessage;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -28,10 +29,17 @@ class ClientSession implements Runnable {
             while (true) {
                 Object value = input.readObject();
                 if (value instanceof NetworkMessage message) {
+                    if (message.protocolVersion != NetworkMessage.PROTOCOL_VERSION) {
+                        error(
+                                "Client/server khác phiên bản. Hãy cập nhật cả hai lên Color Match"
+                                    + " Arena 2.2.");
+                        return;
+                    }
                     server.handle(this, message);
                 }
             }
         } catch (IOException | ClassNotFoundException ignored) {
+        } finally {
             server.disconnect(this);
         }
     }

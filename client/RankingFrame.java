@@ -2,10 +2,12 @@ package client;
 
 import common.MatchHistory;
 import common.PlayerInfo;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -16,21 +18,25 @@ final class RankingFrame extends JFrame {
     private final Runnable historyAction;
 
     private boolean sortByPoints = true;
-    private final DefaultTableModel tableModel = new DefaultTableModel(
-            new Object[]{"#", "Tên người chơi", "Điểm", "Trận thắng", "Trạng thái"}, 0) {
-        @Override public boolean isCellEditable(int r, int c) { return false; }
-    };
+    private final DefaultTableModel tableModel =
+            new DefaultTableModel(
+                    new Object[] {"#", "Tên người chơi", "Điểm", "Trận thắng", "Trạng thái"}, 0) {
+                @Override
+                public boolean isCellEditable(int r, int c) {
+                    return false;
+                }
+            };
     private final JTable rankingTable = new JTable(tableModel);
 
     private final JButton tabPoints = new JButton("Theo điểm");
-    private final JButton tabWins   = new JButton("Theo số trận thắng");
+    private final JButton tabWins = new JButton("Theo số trận thắng");
 
     RankingFrame(List<PlayerInfo> ranking, Runnable historyAction) {
         this(ranking, null, historyAction);
     }
 
     RankingFrame(List<PlayerInfo> ranking, String currentUsername, Runnable historyAction) {
-        super("Color Match Arena - Bảng xếp hạng");
+        super(AppBrand.NAME + " - Bảng xếp hạng");
         this.originalList = ranking != null ? new ArrayList<>(ranking) : new ArrayList<>();
         this.currentUsername = currentUsername;
         this.historyAction = historyAction;
@@ -56,45 +62,54 @@ final class RankingFrame extends JFrame {
     }
 
     private JPanel createTopGradientHeader() {
-        UITheme.GradientPanel header = new UITheme.GradientPanel(
-                new Color(67, 56, 202), new Color(14, 165, 233), true);
+        UITheme.GradientPanel header =
+                new UITheme.GradientPanel(UITheme.BG_CARD, UITheme.BG_CARD, true);
         header.setPreferredSize(new Dimension(0, 68));
         header.setLayout(new BorderLayout());
         header.setBorder(BorderFactory.createEmptyBorder(0, 24, 0, 24));
 
         JPanel brand = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 16));
         brand.setOpaque(false);
-        JLabel trophyIcon = new JLabel(UITheme.createVectorIcon("trophy", 24, Color.WHITE));
-        JLabel logo = new JLabel("BẢNG XẾP HẠNG ANH HÙNG");
+        JLabel trophyIcon =
+                new JLabel(UITheme.createVectorIcon("trophy", 24, UITheme.TEXT_PRIMARY));
+        JLabel logo = new JLabel("BẢNG XẾP HẠNG");
         logo.setFont(new Font(UITheme.FONT_FAMILY, Font.BOLD, 19));
-        logo.setForeground(Color.WHITE);
+        logo.setForeground(UITheme.TEXT_PRIMARY);
         brand.add(trophyIcon);
         brand.add(logo);
         header.add(brand, BorderLayout.WEST);
 
-        JButton backBtn = new JButton("Quay lại sảnh", UITheme.createVectorIcon("logout", 16, Color.WHITE)) {
-            @Override protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                UITheme.applyQualityHints(g2);
-                Color bg = getModel().isRollover() ? new Color(255, 255, 255, 50) : new Color(255, 255, 255, 30);
-                g2.setColor(bg);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 16, 16);
-                g2.dispose();
-                super.paintComponent(g);
-            }
-        };
+        JButton backBtn =
+                new JButton(
+                        "Quay lại sảnh",
+                        UITheme.createVectorIcon("logout", 16, UITheme.TEXT_PRIMARY)) {
+                    @Override
+                    protected void paintComponent(Graphics g) {
+                        Graphics2D g2 = (Graphics2D) g.create();
+                        UITheme.applyQualityHints(g2);
+                        Color bg =
+                                getModel().isRollover()
+                                        ? new Color(255, 255, 255, 50)
+                                        : new Color(255, 255, 255, 30);
+                        g2.setColor(bg);
+                        g2.fillRoundRect(0, 0, getWidth(), getHeight(), 16, 16);
+                        g2.dispose();
+                        super.paintComponent(g);
+                    }
+                };
         backBtn.setFont(new Font(UITheme.FONT_FAMILY, Font.BOLD, 13));
-        backBtn.setForeground(Color.WHITE);
+        backBtn.setForeground(UITheme.TEXT_PRIMARY);
         backBtn.setIconTextGap(8);
         backBtn.setContentAreaFilled(false);
         backBtn.setBorderPainted(false);
         backBtn.setFocusPainted(false);
         backBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         backBtn.setBorder(BorderFactory.createEmptyBorder(6, 16, 6, 16));
-        backBtn.addActionListener(e -> {
-            SoundManager.playClick();
-            dispose();
-        });
+        backBtn.addActionListener(
+                e -> {
+                    SoundManager.playClick();
+                    dispose();
+                });
 
         JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 16));
         right.setOpaque(false);
@@ -105,7 +120,8 @@ final class RankingFrame extends JFrame {
     }
 
     private JPanel createSidebar() {
-        UITheme.RoundedPanel sidebar = new UITheme.RoundedPanel(18, Color.WHITE, UITheme.BORDER, 1);
+        UITheme.RoundedPanel sidebar =
+                new UITheme.RoundedPanel(18, UITheme.BG_CARD, UITheme.BORDER, 1);
         sidebar.enableShadow(true);
         sidebar.setLayout(new BorderLayout(0, 18));
         sidebar.setPreferredSize(new Dimension(230, 0));
@@ -135,26 +151,27 @@ final class RankingFrame extends JFrame {
 
         profilePanel.add(Box.createVerticalStrut(6));
 
-        JPanel statusPill = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 3)) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                UITheme.applyQualityHints(g2);
-                g2.setColor(UITheme.WIN_BG);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
-                g2.setColor(new Color(167, 243, 208));
-                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 12, 12);
-                g2.dispose();
-                super.paintComponent(g);
-            }
-        };
+        JPanel statusPill =
+                new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 3)) {
+                    @Override
+                    protected void paintComponent(Graphics g) {
+                        Graphics2D g2 = (Graphics2D) g.create();
+                        UITheme.applyQualityHints(g2);
+                        g2.setColor(UITheme.WIN_BG);
+                        g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
+                        g2.setColor(UITheme.WIN_BG);
+                        g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 12, 12);
+                        g2.dispose();
+                        super.paintComponent(g);
+                    }
+                };
         statusPill.setOpaque(false);
         statusPill.setAlignmentX(Component.CENTER_ALIGNMENT);
         statusPill.setMaximumSize(new Dimension(170, 26));
 
         JLabel statusTxt = new JLabel("● Đang trực tuyến", SwingConstants.CENTER);
         statusTxt.setFont(new Font(UITheme.FONT_FAMILY, Font.BOLD, 12));
-        statusTxt.setForeground(new Color(5, 150, 105));
+        statusTxt.setForeground(UITheme.WIN_COLOR);
         statusPill.add(statusTxt);
 
         profilePanel.add(statusPill);
@@ -170,44 +187,53 @@ final class RankingFrame extends JFrame {
         navPanel.add(Box.createVerticalStrut(8));
         navPanel.add(createSidebarBtn("Bảng xếp hạng", "trophy", true, () -> {}));
         navPanel.add(Box.createVerticalStrut(8));
-        navPanel.add(createSidebarBtn("Lịch sử đấu", "history", false, () -> {
-            dispose();
-            if (historyAction != null) historyAction.run();
-        }));
+        navPanel.add(
+                createSidebarBtn(
+                        "Lịch sử đấu",
+                        "history",
+                        false,
+                        () -> {
+                            dispose();
+                            if (historyAction != null) historyAction.run();
+                        }));
 
         sidebar.add(navPanel, BorderLayout.CENTER);
 
         // 3. BOTTOM BACK
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setOpaque(false);
-        bottomPanel.add(createSidebarBtn("Quay lại", "logout", false, this::dispose), BorderLayout.SOUTH);
+        bottomPanel.add(
+                createSidebarBtn("Quay lại", "logout", false, this::dispose), BorderLayout.SOUTH);
 
         sidebar.add(bottomPanel, BorderLayout.SOUTH);
 
         return sidebar;
     }
 
-    private JButton createSidebarBtn(String text, String iconType, boolean active, Runnable action) {
-        Color iconColor = active ? UITheme.PRIMARY : UITheme.TEXT_MUTED;
-        JButton btn = new JButton(text, UITheme.createVectorIcon(iconType, 18, iconColor)) {
-            @Override protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                UITheme.applyQualityHints(g2);
-                if (active) {
-                    g2.setColor(new Color(238, 242, 255));
-                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
-                    g2.setColor(UITheme.PRIMARY);
-                    g2.fillRoundRect(0, 4, 4, getHeight() - 8, 4, 4);
-                } else if (getModel().isRollover()) {
-                    g2.setColor(new Color(241, 245, 249));
-                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
-                }
-                g2.dispose();
-                super.paintComponent(g);
-            }
-        };
+    private JButton createSidebarBtn(
+            String text, String iconType, boolean active, Runnable action) {
+        Color iconColor = active ? UITheme.ACCENT : UITheme.TEXT_MUTED;
+        JButton btn =
+                new JButton(text, UITheme.createVectorIcon(iconType, 18, iconColor)) {
+                    @Override
+                    protected void paintComponent(Graphics g) {
+                        Graphics2D g2 = (Graphics2D) g.create();
+                        UITheme.applyQualityHints(g2);
+                        if (active) {
+                            g2.setColor(UITheme.BG_ELEVATED);
+                            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
+                            g2.setColor(UITheme.PRIMARY);
+                            g2.fillRoundRect(0, 4, 4, getHeight() - 8, 4, 4);
+                        } else if (getModel().isRollover()) {
+                            g2.setColor(UITheme.BG_PAGE);
+                            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
+                        }
+                        g2.dispose();
+                        super.paintComponent(g);
+                    }
+                };
         btn.setFont(new Font(UITheme.FONT_FAMILY, active ? Font.BOLD : Font.PLAIN, 14));
-        btn.setForeground(active ? UITheme.PRIMARY : UITheme.TEXT_MUTED);
+        btn.setForeground(active ? UITheme.ACCENT : UITheme.TEXT_MUTED);
         btn.setIconTextGap(12);
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
@@ -218,15 +244,17 @@ final class RankingFrame extends JFrame {
         btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
         btn.setPreferredSize(new Dimension(202, 44));
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btn.addActionListener(e -> {
-            SoundManager.playClick();
-            action.run();
-        });
+        btn.addActionListener(
+                e -> {
+                    SoundManager.playClick();
+                    action.run();
+                });
         return btn;
     }
 
     private JPanel createTableCard() {
-        UITheme.RoundedPanel card = new UITheme.RoundedPanel(18, Color.WHITE, UITheme.BORDER, 1);
+        UITheme.RoundedPanel card =
+                new UITheme.RoundedPanel(18, UITheme.BG_CARD, UITheme.BORDER, 1);
         card.enableShadow(true);
         card.setLayout(new BorderLayout(0, 14));
         card.setBorder(BorderFactory.createEmptyBorder(18, 20, 18, 20));
@@ -235,7 +263,7 @@ final class RankingFrame extends JFrame {
         topBar.setOpaque(false);
         topBar.setPreferredSize(new Dimension(0, 36));
 
-        JLabel title = new JLabel("Top cao thủ Color Match");
+        JLabel title = new JLabel("Xếp hạng " + AppBrand.NAME);
         title.setFont(new Font(UITheme.FONT_FAMILY, Font.BOLD, 17));
         title.setForeground(UITheme.TEXT_PRIMARY);
         topBar.add(title, BorderLayout.WEST);
@@ -246,24 +274,26 @@ final class RankingFrame extends JFrame {
         styleTab(tabPoints, true);
         styleTab(tabWins, false);
 
-        tabPoints.addActionListener(e -> {
-            SoundManager.playClick();
-            if (!sortByPoints) {
-                sortByPoints = true;
-                styleTab(tabPoints, true);
-                styleTab(tabWins, false);
-                refreshData();
-            }
-        });
-        tabWins.addActionListener(e -> {
-            SoundManager.playClick();
-            if (sortByPoints) {
-                sortByPoints = false;
-                styleTab(tabPoints, false);
-                styleTab(tabWins, true);
-                refreshData();
-            }
-        });
+        tabPoints.addActionListener(
+                e -> {
+                    SoundManager.playClick();
+                    if (!sortByPoints) {
+                        sortByPoints = true;
+                        styleTab(tabPoints, true);
+                        styleTab(tabWins, false);
+                        refreshData();
+                    }
+                });
+        tabWins.addActionListener(
+                e -> {
+                    SoundManager.playClick();
+                    if (sortByPoints) {
+                        sortByPoints = false;
+                        styleTab(tabPoints, false);
+                        styleTab(tabWins, true);
+                        refreshData();
+                    }
+                });
 
         tabRow.add(tabPoints);
         tabRow.add(tabWins);
@@ -273,7 +303,7 @@ final class RankingFrame extends JFrame {
         setupTable();
         JScrollPane scroll = new JScrollPane(rankingTable);
         scroll.setBorder(BorderFactory.createLineBorder(UITheme.BORDER, 1));
-        scroll.getViewport().setBackground(Color.WHITE);
+        scroll.getViewport().setBackground(UITheme.BG_CARD);
         card.add(scroll, BorderLayout.CENTER);
 
         return card;
@@ -283,41 +313,63 @@ final class RankingFrame extends JFrame {
         btn.setFont(new Font(UITheme.FONT_FAMILY, Font.BOLD, 13));
         btn.setFocusPainted(false);
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btn.setBackground(active ? UITheme.PRIMARY : Color.WHITE);
-        btn.setForeground(active ? Color.WHITE : UITheme.TEXT_MUTED);
-        btn.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(active ? UITheme.PRIMARY : UITheme.BORDER, 1),
-                BorderFactory.createEmptyBorder(6, 14, 6, 14)));
+        btn.setBackground(active ? UITheme.PRIMARY : UITheme.BG_CARD);
+        btn.setForeground(active ? UITheme.TEXT_PRIMARY : UITheme.TEXT_MUTED);
+        btn.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(
+                                active ? UITheme.PRIMARY : UITheme.BORDER, 1),
+                        BorderFactory.createEmptyBorder(6, 14, 6, 14)));
     }
 
     private void setupTable() {
         rankingTable.setRowHeight(48);
         rankingTable.setFont(new Font(UITheme.FONT_FAMILY, Font.PLAIN, 14));
         rankingTable.getTableHeader().setFont(new Font(UITheme.FONT_FAMILY, Font.BOLD, 13));
-        rankingTable.getTableHeader().setBackground(new Color(248, 250, 252));
+        rankingTable.getTableHeader().setBackground(UITheme.BG_CARD);
         rankingTable.getTableHeader().setForeground(UITheme.TEXT_MUTED);
         rankingTable.getTableHeader().setPreferredSize(new Dimension(100, 38));
         rankingTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         rankingTable.setShowVerticalLines(false);
-        rankingTable.setGridColor(new Color(241, 245, 249));
+        rankingTable.setGridColor(UITheme.BG_PAGE);
         rankingTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
         // Căn chỉnh tiêu đề bảng đồng bộ 100% với nội dung bên dưới (khung chữ thẳng tắp)
-        rankingTable.getTableHeader().setDefaultRenderer(new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
-                JLabel l = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
-                l.setBackground(new Color(248, 250, 252));
-                l.setForeground(UITheme.TEXT_MUTED);
-                l.setFont(new Font(UITheme.FONT_FAMILY, Font.BOLD, 13));
-                l.setBorder(BorderFactory.createCompoundBorder(
-                        BorderFactory.createMatteBorder(0, 0, 1, 0, UITheme.BORDER),
-                        BorderFactory.createEmptyBorder(0, col == 1 ? 16 : 0, 0, 0)
-                ));
-                l.setHorizontalAlignment(col == 1 ? SwingConstants.LEFT : SwingConstants.CENTER);
-                return l;
-            }
-        });
+        rankingTable
+                .getTableHeader()
+                .setDefaultRenderer(
+                        new DefaultTableCellRenderer() {
+                            @Override
+                            public Component getTableCellRendererComponent(
+                                    JTable table,
+                                    Object value,
+                                    boolean isSelected,
+                                    boolean hasFocus,
+                                    int row,
+                                    int col) {
+                                JLabel l =
+                                        (JLabel)
+                                                super.getTableCellRendererComponent(
+                                                        table,
+                                                        value,
+                                                        isSelected,
+                                                        hasFocus,
+                                                        row,
+                                                        col);
+                                l.setBackground(UITheme.BG_CARD);
+                                l.setForeground(UITheme.TEXT_MUTED);
+                                l.setFont(new Font(UITheme.FONT_FAMILY, Font.BOLD, 13));
+                                l.setBorder(
+                                        BorderFactory.createCompoundBorder(
+                                                BorderFactory.createMatteBorder(
+                                                        0, 0, 1, 0, UITheme.BORDER),
+                                                BorderFactory.createEmptyBorder(
+                                                        0, col == 1 ? 16 : 0, 0, 0)));
+                                l.setHorizontalAlignment(
+                                        col == 1 ? SwingConstants.LEFT : SwingConstants.CENTER);
+                                return l;
+                            }
+                        });
 
         rankingTable.getColumnModel().getColumn(0).setPreferredWidth(60);
         rankingTable.getColumnModel().getColumn(0).setMaxWidth(80);
@@ -326,68 +378,91 @@ final class RankingFrame extends JFrame {
         rankingTable.getColumnModel().getColumn(3).setPreferredWidth(120);
         rankingTable.getColumnModel().getColumn(4).setPreferredWidth(120);
 
-        rankingTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean selected, boolean focused, int row, int col) {
-                Component c = super.getTableCellRendererComponent(table, value, selected, focused, row, col);
-                String u = (String) table.getValueAt(row, 1);
-                boolean isMe = currentUsername != null && u != null && u.contains("(Bạn)");
+        rankingTable.setDefaultRenderer(
+                Object.class,
+                new DefaultTableCellRenderer() {
+                    @Override
+                    public Component getTableCellRendererComponent(
+                            JTable table,
+                            Object value,
+                            boolean selected,
+                            boolean focused,
+                            int row,
+                            int col) {
+                        Component c =
+                                super.getTableCellRendererComponent(
+                                        table, value, selected, focused, row, col);
+                        String u = (String) table.getValueAt(row, 1);
+                        boolean isMe = currentUsername != null && u != null && u.contains("(Bạn)");
 
-                if (selected) c.setBackground(new Color(224, 231, 255));
-                else if (isMe) c.setBackground(new Color(245, 243, 255));
-                else c.setBackground(row % 2 == 0 ? Color.WHITE : new Color(248, 250, 252));
-                c.setForeground(UITheme.TEXT_PRIMARY);
+                        if (selected) c.setBackground(UITheme.BG_ELEVATED);
+                        else if (isMe) c.setBackground(UITheme.BG_CARD);
+                        else c.setBackground(row % 2 == 0 ? UITheme.BG_CARD : UITheme.BG_CARD);
+                        c.setForeground(UITheme.TEXT_PRIMARY);
 
-                if (col == 0) {
-                    setHorizontalAlignment(CENTER);
-                    setBorder(BorderFactory.createEmptyBorder());
-                    setFont(new Font(UITheme.FONT_FAMILY, Font.BOLD, 14));
-                    if (row == 0) setForeground(new Color(234, 179, 8));
-                    else if (row == 1) setForeground(new Color(148, 163, 184));
-                    else if (row == 2) setForeground(new Color(205, 127, 50));
-                    else setForeground(UITheme.TEXT_MUTED);
-                } else if (col == 1) {
-                    setHorizontalAlignment(LEFT);
-                    setBorder(BorderFactory.createEmptyBorder(0, 16, 0, 8)); // Khớp với lề của header
-                    setFont(new Font(UITheme.FONT_FAMILY, isMe ? Font.BOLD : Font.PLAIN, 14));
-                    if (isMe) setForeground(UITheme.PRIMARY);
-                } else if (col == 2 || col == 3) {
-                    setHorizontalAlignment(CENTER);
-                    setBorder(BorderFactory.createEmptyBorder());
-                    setFont(new Font(UITheme.FONT_FAMILY, Font.BOLD, 13));
-                } else if (col == 4) {
-                    setHorizontalAlignment(CENTER);
-                    setBorder(BorderFactory.createEmptyBorder());
-                    setForeground(UITheme.WIN_COLOR);
-                    setFont(new Font(UITheme.FONT_FAMILY, Font.BOLD, 12));
-                }
-                return c;
-            }
-        });
+                        if (col == 0) {
+                            setHorizontalAlignment(CENTER);
+                            setBorder(BorderFactory.createEmptyBorder());
+                            setFont(new Font(UITheme.FONT_FAMILY, Font.BOLD, 14));
+                            if (row == 0) setForeground(UITheme.DRAW_COLOR);
+                            else if (row == 1) setForeground(UITheme.TEXT_MUTED);
+                            else if (row == 2) setForeground(UITheme.DRAW_COLOR);
+                            else setForeground(UITheme.TEXT_MUTED);
+                        } else if (col == 1) {
+                            setHorizontalAlignment(LEFT);
+                            setBorder(
+                                    BorderFactory.createEmptyBorder(
+                                            0, 16, 0, 8)); // Khớp với lề của header
+                            setFont(
+                                    new Font(
+                                            UITheme.FONT_FAMILY,
+                                            isMe ? Font.BOLD : Font.PLAIN,
+                                            14));
+                            if (isMe) setForeground(UITheme.ACCENT);
+                        } else if (col == 2 || col == 3) {
+                            setHorizontalAlignment(CENTER);
+                            setBorder(BorderFactory.createEmptyBorder());
+                            setFont(new Font(UITheme.FONT_FAMILY, Font.BOLD, 13));
+                        } else if (col == 4) {
+                            setHorizontalAlignment(CENTER);
+                            setBorder(BorderFactory.createEmptyBorder());
+                            setForeground(UITheme.WIN_COLOR);
+                            setFont(new Font(UITheme.FONT_FAMILY, Font.BOLD, 12));
+                        }
+                        return c;
+                    }
+                });
     }
 
     private void refreshData() {
         List<PlayerInfo> sorted = new ArrayList<>(originalList);
         if (sortByPoints) {
-            sorted.sort(Comparator.comparingDouble(PlayerInfo::points).reversed()
-                    .thenComparing(Comparator.comparingInt(PlayerInfo::wins).reversed()));
+            sorted.sort(
+                    Comparator.comparingDouble(PlayerInfo::points)
+                            .reversed()
+                            .thenComparing(Comparator.comparingInt(PlayerInfo::wins).reversed()));
         } else {
-            sorted.sort(Comparator.comparingInt(PlayerInfo::wins).reversed()
-                    .thenComparing(Comparator.comparingDouble(PlayerInfo::points).reversed()));
+            sorted.sort(
+                    Comparator.comparingInt(PlayerInfo::wins)
+                            .reversed()
+                            .thenComparing(
+                                    Comparator.comparingDouble(PlayerInfo::points).reversed()));
         }
 
         tableModel.setRowCount(0);
         int rank = 1;
         for (PlayerInfo p : sorted) {
             boolean isMe = currentUsername != null && currentUsername.equals(p.username());
-            String medal = rank == 1 ? "1" : (rank == 2 ? "2" : (rank == 3 ? "3" : String.valueOf(rank)));
-            tableModel.addRow(new Object[]{
-                    medal,
-                    p.username() + (isMe ? " (Bạn)" : ""),
-                    String.format("%.1f đ", p.points()),
-                    p.wins() + " trận",
-                    "● Online"
-            });
+            String medal =
+                    rank == 1 ? "1" : (rank == 2 ? "2" : (rank == 3 ? "3" : String.valueOf(rank)));
+            tableModel.addRow(
+                    new Object[] {
+                        medal,
+                        p.username() + (isMe ? " (Bạn)" : ""),
+                        String.format("%.1f đ", p.points()),
+                        p.wins() + " trận",
+                        "● Online"
+                    });
             rank++;
         }
     }

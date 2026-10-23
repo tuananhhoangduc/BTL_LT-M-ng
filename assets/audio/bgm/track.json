@@ -1,0 +1,12 @@
+{
+  "source_filename": "cyberwave-orchestra-puzzle-game-bright-casual-video-game-music-249202.mp3",
+  "source_sha256": "ceafdd063d320ed5be7244ab825021056fd7ab9fe64bb5f57ac9a5cb87a58803",
+  "runtime_file": "audio/bgm/puzzle_bright.wav",
+  "duration_seconds": 75.86,
+  "sample_rate": 44100,
+  "channels": 2,
+  "peak_before": 0.968683,
+  "gain_applied": 0.918773,
+  "edge_fade_ms": 60,
+  "selection": "User supplied and explicitly selected this local MP3."
+}

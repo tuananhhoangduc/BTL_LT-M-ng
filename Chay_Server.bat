@@ -1,13 +1,21 @@
 @echo off
+chcp 65001 >nul
 cd /d "%~dp0"
 title Color Match Arena - Server
+set "JAVA_CMD=%JAVA_HOME%\bin\java.exe"
+if not exist "%JAVA_CMD%" (
+    echo [LOI] JAVA_HOME chua tro toi JDK 24.
+    echo JAVA_HOME hien tai: %JAVA_HOME%
+    pause
+    exit /b 1
+)
 echo ====================================================
-echo Dang khoi dong Server Dau Tri Sac Mau (Port 5000)...
+echo Starting Color Match Arena Server (Port 5000)...
 echo ====================================================
 echo.
-java -cp ".;lib/mysql-connector-j.jar" server.ColorMatchServer
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\Run.ps1" -Server
 if errorlevel 1 (
     echo.
-    echo [LOI] Khong the chay Server. Vui long kiem tra MySQL trong XAMPP da BAT (Start).
+    echo [LOI] Khong the chay Server. Vui long kiem tra MySQL trong XAMPP da BAT ^(Start^).
     pause
 )

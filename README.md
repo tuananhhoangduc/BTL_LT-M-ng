@@ -1,6 +1,50 @@
 # Color Match Arena
 
+Tên game giữ tiếng Anh. Bản hiện tại **2.2** dùng tile v2, capture từ đúng tâm tia,
+phản hồi đặt quân và trạng thái đấu lại của cả hai người.
+Gói mới: **dist/color-match-arena/**; ZIP: **dist/ColorMatchArena-Client.zip**.
+
+[Plan game feel](docs/plans/color-match-arena-game-feel-v3.md) · [Kiểm tra 2.2](docs/COLOR_MATCH_ARENA_22.md) · [Ảnh capture](docs/screenshots/color-match-arena/game-feel-v3/capture-timeline.png)
+
+**Khởi động lại cả server và client bằng bản 2.2**, kể cả laptop thứ hai. Protocol 3
+bổ sung tâm tia và readiness đấu lại; không dùng lẫn JAR 2.1. BGM do người dùng chọn
+và volume đã lưu được giữ nguyên.
+
+Thông tin các bản trước ở dưới chỉ để đối chiếu; tên sản phẩm hiện tại là Color Match Arena.
+
+Lịch sử bản **Sắc Trận 2.0**, dùng bộ PNG riêng và bài BGM do người dùng chọn.
+Chạy `Chay_Server.bat` / `Chay_Client.bat`; gửi `dist/SacTran-Client.zip` cho laptop khác.
+
+[Hướng dẫn bản mới](docs/SAC_TRAN_SETUP.md) · [Ảnh game thật](docs/screenshots/sac-tran/game.png) · [Kiểm tra](docs/SAC_TRAN_VALIDATION.md)
+
+Các mục Prism bên dưới là thông tin phiên bản trước. Gói hiện tại ở **dist/sac-tran/**.
+
 Bản chạy thử client-server của game Đấu Trí Sắc Màu.
+
+## Bản Prism — giao diện và âm thanh mới
+
+Yêu cầu **JDK 24** và `JAVA_HOME` trỏ tới JDK. Chạy `Chay_Server.bat` và
+`Chay_Client.bat` tại thư mục repo; launcher tự biên dịch source UTF-8 và dùng
+build mới, không dùng `.class` cũ được commit sẵn.
+
+Client để gửi sang laptop khác nằm trong **`dist/prism/`**. Thư mục `dist/` gốc
+và `ColorMatch-Client.zip` là bản cũ. Server và client Prism phải cùng phiên bản
+vì BoardState mới bổ sung dữ liệu tia chiếm lãnh.
+
+- [Cài đặt và chơi LAN](docs/PRISM_SETUP.md)
+- [Ảnh giao diện thật](docs/screenshots/game.png)
+- [Nguồn asset / giấy phép](assets/ASSET_CREDITS.md)
+- [Kết quả kiểm tra](docs/PRISM_VALIDATION.md)
+
+```powershell
+# PowerShell tại thư mục dự án; nhập mật khẩu MySQL cục bộ.
+$credential = Get-Credential -UserName root -Message 'Mat khau MySQL'
+$env:COLOR_MATCH_DB_PASSWORD = $credential.GetNetworkCredential().Password
+.\Chay_Server.bat
+# Mở terminal khác rồi chạy .\Chay_Client.bat
+```
+
+Kiểm tra tự động: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Test.ps1`.
 
 ## Cấu trúc
 
@@ -40,7 +84,7 @@ user: root
 password: rỗng (mặc định XAMPP)
 ```
 
-Nếu bạn đã đặt mật khẩu cho `root`, sửa hằng `PASSWORD` trong `DBConnection.java`.
+Nếu `root` có mật khẩu, đặt biến môi trường `COLOR_MATCH_DB_PASSWORD` như hướng dẫn trên.
 
 ### Biên dịch và chạy
 
@@ -77,6 +121,6 @@ Mở client lần thứ hai bằng lệnh trên để mô phỏng người chơi
 
 - Đã có TCP client-server, đăng nhập, đăng ký, online list, thách đấu, bàn cờ,
   timer, luật chuỗi 3, tia chiếm lĩnh, xin thua, thoát và xếp hạng.
-- Dữ liệu tài khoản và xếp hạng hiện lưu trong bộ nhớ server, nên sẽ mất khi
-  server tắt.
-- `database.sql` đã có sẵn để nối tầng DAO/JDBC khi thêm MySQL Connector/J.
+- Tài khoản, điểm và lịch sử trận đấu được lưu qua DAO/JDBC vào MySQL.
+- Import phần tạo database và bảng trong `database.sql` một lần. Câu SELECT minh họa
+  dùng `WHERE mp.user_id = ?` là tham số JDBC; bỏ qua khi import bằng Workbench.

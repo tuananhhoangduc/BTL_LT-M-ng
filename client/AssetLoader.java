@@ -1,37 +1,36 @@
 package client;
 
 import java.awt.Image;
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.*;
+import java.nio.file.*;
+import java.util.*;
+
 import javax.imageio.ImageIO;
 
 final class AssetLoader {
-    private static final Map<String, Image> cache = new HashMap<>();
-    private static final String ASSET_DIR = "assets" + File.separator;
+    private static final Map<String, Image> CACHE = new HashMap<>();
+    private static final Set<String> MISSING = new HashSet<>();
 
     private AssetLoader() {}
 
-    /**
-     * Tải ảnh từ thư mục assets/ (nếu người dùng thêm ảnh vào).
-     * Trả về null nếu chưa có file để giao diện tự động vẽ fallback Graphics2D vector.
-     */
-    static Image getImage(String fileName) {
-        if (cache.containsKey(fileName)) {
-            return cache.get(fileName);
-        }
-        try {
-            File f = new File(ASSET_DIR + fileName);
-            if (f.exists() && f.isFile()) {
-                Image img = ImageIO.read(f);
-                if (img != null) {
-                    cache.put(fileName, img);
-                    return img;
-                }
+    static InputStream open(String name) throws IOException {
+        Path file = Path.of("assets").resolve(name);
+        if (Files.isRegularFile(file)) return Files.newInputStream(file);
+        return AssetLoader.class.getResourceAsStream("/assets/" + name);
+    }
+
+    static synchronized Image getImage(String name) {
+        if (CACHE.containsKey(name)) return CACHE.get(name);
+        if (MISSING.contains(name)) return null;
+        try (InputStream input = open(name)) {
+            Image image = input == null ? null : ImageIO.read(input);
+            if (image != null) {
+                CACHE.put(name, image);
+                return image;
             }
-        } catch (Exception ignored) {}
-        cache.put(fileName, null);
+        } catch (IOException ignored) {
+        }
+        MISSING.add(name);
         return null;
     }
 }
-

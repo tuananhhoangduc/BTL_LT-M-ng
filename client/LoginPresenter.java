@@ -2,101 +2,111 @@ package client;
 
 import common.MessageType;
 import common.NetworkMessage;
-import java.io.IOException;
+
+import javax.swing.*;
 
 final class LoginPresenter {
     private final LoginView view;
     private ServerConnection connection;
     private String currentHost = "";
-    private int currentPort = 0;
+    private int currentPort;
+    private boolean busy;
+    private String requestUsername;
+    private final Timer timeout;
 
     LoginPresenter(LoginView view) {
         this.view = view;
+        timeout =
+                new Timer(
+                        10000,
+                        e -> {
+                            if (connection != null) connection.close();
+                            connection = null;
+                            done();
+                            view.showError("Máy chủ không phản hồi. Hãy thử kết nối lại.");
+                        });
+        timeout.setRepeats(false);
         view.onLogin(() -> authenticate(MessageType.LOGIN));
-        view.onRegister(this::handleRegister);
+        view.onRegister(() -> authenticate(MessageType.REGISTER));
     }
 
-    private boolean ensureConnection() {
-        String host = view.host();
-        if (host.isBlank()) {
-            host = "127.0.0.1";
-        }
+    private void done() {
+        timeout.stop();
+        busy = false;
+        view.setBusy(false);
+    }
+
+    private void authenticate(MessageType type) {
+        if (busy) return;
+        String host = view.host(), user = view.username(), pass = view.password();
         int port = view.port();
-        if (port <= 0) {
-            port = 5000;
+        if (host.isBlank() || port < 1 || port > 65535) {
+            view.showError("Nhập địa chỉ máy chủ và cổng từ 1 đến 65535.");
+            return;
         }
-        if (connection != null && host.equalsIgnoreCase(currentHost) && port == currentPort) {
-            return true;
+        if (user.isBlank() || pass.isBlank()) {
+            view.showError("Nhập tên tài khoản và mật khẩu.");
+            return;
+        }
+        if (type == MessageType.REGISTER && !pass.equals(view.confirmPassword())) {
+            view.showError("Mật khẩu nhập lại không khớp.");
+            return;
+        }
+        busy = true;
+        view.setBusy(true);
+        requestUsername = user;
+        NetworkMessage message = NetworkMessage.of(type);
+        message.username = user;
+        message.password = pass;
+        if (connection != null
+                && connection.isOpen()
+                && host.equals(currentHost)
+                && port == currentPort) {
+            timeout.restart();
+            connection.send(message);
+            return;
         }
         if (connection != null) {
             connection.close();
             connection = null;
         }
-        try {
-            connection = ServerConnection.connect(host, port, this::handleMessage);
-            currentHost = host;
-            currentPort = port;
-            return true;
-        } catch (IOException exception) {
-            view.showError("Không thể kết nối đến máy chủ " + host + ":" + port);
-            return false;
-        }
-    }
+        new SwingWorker<ServerConnection, Void>() {
+            @Override
+            protected ServerConnection doInBackground() throws Exception {
+                return ServerConnection.connect(host, port, LoginPresenter.this::handleMessage);
+            }
 
-    private void authenticate(MessageType type) {
-        if (view.username().isBlank() || view.password().isBlank()) {
-            view.showError("Sai tên đăng nhập hoặc mật khẩu!");
-            return;
-        }
-        if (!ensureConnection()) {
-            return;
-        }
-        NetworkMessage message = NetworkMessage.of(type);
-        message.username = view.username();
-        message.password = view.password();
-        connection.send(message);
-    }
-
-    private void handleRegister() {
-        String user = view.username();
-        String pass = view.password();
-        String confirm = view.confirmPassword();
-
-        if (user.isBlank()) {
-            view.showError("Vui lòng nhập tên đăng nhập!");
-            return;
-        }
-        if (pass.isBlank()) {
-            view.showError("Vui lòng nhập mật khẩu!");
-            return;
-        }
-        if (!pass.equals(confirm)) {
-            view.showError("Mật khẩu nhập lại không khớp!");
-            return;
-        }
-        if (!ensureConnection()) {
-            return;
-        }
-        NetworkMessage message = NetworkMessage.of(MessageType.REGISTER);
-        message.username = user;
-        message.password = pass;
-        connection.send(message);
+            @Override
+            protected void done() {
+                try {
+                    connection = get();
+                    currentHost = host;
+                    currentPort = port;
+                    timeout.restart();
+                    connection.send(message);
+                } catch (Exception e) {
+                    LoginPresenter.this.done();
+                    view.showError(
+                            "Không kết nối được " + host + ":" + port + ". Kiểm tra IP và server.");
+                }
+            }
+        }.execute();
     }
 
     private void handleMessage(NetworkMessage message) {
         if (message.type == MessageType.REGISTER_RESULT) {
-            if (message.accepted) {
-                view.showMessage("Đăng ký tài khoản thành công!", false);
-            } else {
-                view.showError(message.text != null ? message.text : "Tên đăng nhập đã tồn tại!");
-            }
+            done();
+            view.showMessage(
+                    message.accepted
+                            ? "Tạo tài khoản thành công. Bạn có thể đăng nhập."
+                            : message.text,
+                    !message.accepted);
         } else if (message.type == MessageType.LOGIN_RESULT) {
-            if (message.accepted) {
-                view.openLobby(connection, view.username());
-            } else {
-                view.showError(message.text != null ? message.text : "Sai tên đăng nhập hoặc mật khẩu!");
-            }
+            done();
+            if (message.accepted) view.openLobby(connection, requestUsername);
+            else view.showError(message.text);
         } else if (message.type == MessageType.ERROR) {
+            done();
             view.showError(message.text);
         }
     }

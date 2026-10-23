@@ -1,6 +1,8 @@
 package client;
 
 interface LoginView {
+    default void setBusy(boolean busy) {}
+
     String host();
 
     int port();
