@@ -1,7 +1,8 @@
 package client;
 
-import common.PlayerInfo;
 import common.MatchHistory;
+import common.PlayerInfo;
+
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -29,4 +30,10 @@ interface LobbyView {
     void showMessage(String message, boolean error);
 
     void close();
+
+    default void challengeStatus(String text, boolean waiting) {}
+
+    default void connectionLost(Runnable login) {
+        showMessage("Mất kết nối máy chủ.", true);
+    }
 }

@@ -22,7 +22,7 @@ public final class ColorMatchServer {
         }
         ServerState state = new ServerState();
         try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("Color Match Server đang chạy tại cổng " + port);
+            System.out.println("Color Match Arena Server đang chạy tại cổng " + port);
             while (true) {
                 Socket socket = serverSocket.accept();
                 Thread clientThread = new Thread(new ClientSession(state, socket), "client-handler");

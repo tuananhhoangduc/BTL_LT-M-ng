@@ -1,0 +1,21 @@
+SAC TRAN 2.0
+
+Yeu cau JDK 24. Mo Chay_Game.bat. PNG va am thanh da nam trong JAR.
+Client khong can MySQL, source code, Python hoac thu muc assets ben ngoai.
+
+Hai laptop cung Wi-Fi:
+1. May chu chay Chay_Server.bat trong repo, dung MySQL da cau hinh.
+2. Lay IPv4 Wi-Fi cua may chu bang ipconfig.
+3. Client tren may chu: Host 127.0.0.1, Cong 5000.
+4. May thu hai: Host la IPv4 cua may chu, Cong 5000.
+5. Hai tai khoan khac nhau: vao sanh, chon doi thu va Thach dau.
+
+Tat ca client va server phai dung ban moi. Khong dung JAR cu o dist/ hoac dist/prism/.
+
+Nut Cai dat: volume nhac/SFX, mute, giam chuyen dong, Credits va Cach choi 3 buoc.
+Nhac: file MP3 Puzzle Game Bright Casual do nguoi dung lua chon.
+Ban co: mui ten + Enter/Space hoac click de dat quan. Co hover ghost va nuoc cuoi.
+Noi tu 3 quan ngang/doc/cheo de mo tia. Tia dung truoc quan doi thu.
+Diem la so o lanh tho. Moi luot 15 giay, moi van 50 luot.
+
+Mat ket noi: Ve dang nhap de ket noi lai; khong tu dong khoi phuc van dang choi.

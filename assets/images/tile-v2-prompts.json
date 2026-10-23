@@ -1,0 +1,22 @@
+{
+  "generator": "built-in image_gen",
+  "date": "2026-10-23",
+  "goal": "Distinct neutral / red / blue territory at actual board size",
+  "assets": [
+    {
+      "key": "neutral-v2",
+      "ref": "assets\\images\\tiles\\neutral.png",
+      "prompt": "Use case: stylized-concept. Edit target: the attached single ceramic tile. Generate ONE production square board tile PNG, not a sheet or board. Preserve its exact front-facing orthographic square geometry, slightly rounded corners, consistent narrow bevel, equal padding, top-left light and genuine outside alpha. New art direction: clean satin ceramic, very low noise, no grit, pockmarks, scratches, white sparkling bevel, glossy gem reflections or glow. At 32 pixels this must read as a quiet flat board surface, subordinate to the crystal pieces. No text, letters, numbers, tokens, pedestals, surrounding shadow or extra objects. Make the neutral tile DARK GRAPHITE CHARCOAL (#202732 interior), truly neutral in hue, not blue. Dark restrained rim (#414a58). Absolutely no pattern or ownership emblem. Much darker and less saturated than either team's tile. Soft flat shading, texture nearly invisible."
+    },
+    {
+      "key": "red-area-v2",
+      "ref": "assets\\images\\tiles\\red_area.png",
+      "prompt": "Use case: stylized-concept. Edit target: the attached single ceramic tile. Generate ONE production square board tile PNG, not a sheet or board. Preserve its exact front-facing orthographic square geometry, slightly rounded corners, consistent narrow bevel, equal padding, top-left light and genuine outside alpha. New art direction: clean satin ceramic, very low noise, no grit, pockmarks, scratches, white sparkling bevel, glossy gem reflections or glow. At 32 pixels this must read as a quiet flat board surface, subordinate to the crystal pieces. No text, letters, numbers, tokens, pedestals, surrounding shadow or extra objects. Make the RED TEAM territory tile clearly SATURATED WARM CORAL RED (#bb3c51 body, #ee6b78 narrow rim), never rust brown, orange stone or gray. Engrave exactly three broad subtle diagonal bands/slashes from lower-left to upper-right; bands must remain identifiable at 32 pixels and around a token in the center. Use darker red bands (#8d263c), not white. Full-color red ownership across the entire surface, clean and calm. Keep overall brightness medium-low so a bright coral crystal on it stands out."
+    },
+    {
+      "key": "blue-area-v2",
+      "ref": "assets\\images\\tiles\\blue_area.png",
+      "prompt": "Use case: stylized-concept. Edit target: the attached single ceramic tile. Generate ONE production square board tile PNG, not a sheet or board. Preserve its exact front-facing orthographic square geometry, slightly rounded corners, consistent narrow bevel, equal padding, top-left light and genuine outside alpha. New art direction: clean satin ceramic, very low noise, no grit, pockmarks, scratches, white sparkling bevel, glossy gem reflections or glow. At 32 pixels this must read as a quiet flat board surface, subordinate to the crystal pieces. No text, letters, numbers, tokens, pedestals, surrounding shadow or extra objects. Make the BLUE TEAM territory tile clearly SATURATED COBALT BLUE (#155b9c body, #48bce4 narrow rim), never gray steel or pale dusty blue. Add a calm engraved repeating diamond-grid motif: a few broad diagonal outlines forming large diamonds, visibly different from the red team's parallel slashes. Motif in darker navy (#123c66), not white. Full-color blue ownership across the entire surface. Keep overall brightness medium-low so a bright ice-blue diamond crystal on it stands out."
+    }
+  ]
+}

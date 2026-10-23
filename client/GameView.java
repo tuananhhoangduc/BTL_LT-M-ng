@@ -1,6 +1,8 @@
 package client;
 
 import common.BoardState;
+import common.RematchStatus;
+
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -28,4 +30,16 @@ interface GameView {
     boolean isSpectator();
 
     void close();
+
+    default void waitingForRematch() {}
+
+    default void moveRejected(String reason) {
+        showMessage(reason);
+    }
+
+    default void rematchStatus(RematchStatus status) {}
+
+    default void connectionLost(Runnable login) {
+        showMessage("Mất kết nối máy chủ.");
+    }
 }

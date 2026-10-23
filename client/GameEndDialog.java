@@ -1,178 +1,225 @@
 package client;
 
+import common.RematchStatus;
+
 import java.awt.*;
+import java.util.function.Consumer;
+
 import javax.swing.*;
 
-final class GameEndDialog extends JDialog {
-    private boolean rematchAccepted = false;
+final class GameEndDialog {
+    private GameEndDialog() {}
 
-    static boolean show(Frame owner, String resultText, String ownColor, String username, String opponent,
-                        int redScore, int blueScore, double currentTotalPoints) {
-        GameEndDialog dialog = new GameEndDialog(owner, resultText, ownColor, username, opponent,
-                redScore, blueScore, currentTotalPoints);
-        dialog.setVisible(true);
-        return dialog.rematchAccepted;
+    static boolean show(
+            Frame owner,
+            String result,
+            String ownColor,
+            String username,
+            String opponent,
+            int redScore,
+            int blueScore,
+            double ignoredTotal) {
+        return show(
+                owner,
+                result,
+                ownColor,
+                username,
+                opponent,
+                redScore,
+                blueScore,
+                ignoredTotal,
+                panel -> {});
     }
 
-    private GameEndDialog(Frame owner, String resultText, String ownColor, String username, String opponent,
-                          int redScore, int blueScore, double currentTotalPoints) {
-        super(owner, "Kết quả trận đấu", true);
-        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        setSize(450, 480);
-        setResizable(false);
-        setLocationRelativeTo(owner);
+    static boolean show(
+            Frame owner,
+            String result,
+            String ownColor,
+            String username,
+            String opponent,
+            int redScore,
+            int blueScore,
+            double ignoredTotal,
+            Consumer<JPanel> opened) {
+        JDialog dialog = new JDialog(owner, "Kết quả — " + AppBrand.NAME, true);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        boolean[] again = {false};
+        JPanel root =
+                content(
+                        result,
+                        ownColor,
+                        username,
+                        opponent,
+                        redScore,
+                        blueScore,
+                        dialog::dispose,
+                        () -> {
+                            again[0] = true;
+                            dialog.dispose();
+                        });
+        if (!"SPECTATOR".equals(ownColor)) {
+            if (result != null && result.startsWith(ownColor + "|")) SoundManager.playWin();
+            else if (result != null && result.startsWith("DRAW|")) SoundManager.playCapture();
+            else SoundManager.playLose();
+        }
+        dialog.setContentPane(root);
+        dialog.getRootPane()
+                .registerKeyboardAction(
+                        e -> dialog.dispose(),
+                        KeyStroke.getKeyStroke("ESCAPE"),
+                        JComponent.WHEN_IN_FOCUSED_WINDOW);
+        dialog.pack();
+        dialog.setMinimumSize(new Dimension(440, dialog.getHeight()));
+        dialog.setResizable(false);
+        dialog.setLocationRelativeTo(owner);
+        opened.accept(root);
+        try {
+            dialog.setVisible(true);
+        } finally {
+            opened.accept(null);
+        }
+        return again[0];
+    }
 
-        String[] parts = resultText != null ? resultText.split("\\|", 2) : new String[]{"DRAW", ""};
-        String winner = parts[0];
-        String rawReason = parts.length > 1 ? parts[1] : "";
-
-        boolean isWin = ownColor != null && ownColor.equals(winner);
-        boolean isDraw = "DRAW".equals(winner);
-
-        // Phát âm thanh tương ứng
-        if (isWin) SoundManager.playWin();
-        else if (isDraw) SoundManager.playCapture();
-        else SoundManager.playLose();
-
-        String titleText = isWin ? "Bạn đã chiến thắng!" : (isDraw ? "Trận đấu Hòa!" : "Bạn đã thua!");
-        Color titleColor = isWin ? UITheme.WIN_COLOR : (isDraw ? UITheme.DRAW_COLOR : UITheme.LOSS_COLOR);
-
-        // Root container với bóng đổ
-        UITheme.RoundedPanel root = new UITheme.RoundedPanel(24, Color.WHITE, UITheme.BORDER, 1);
-        root.enableShadow(true, 10);
+    static JPanel content(
+            String result,
+            String ownColor,
+            String username,
+            String opponent,
+            int redScore,
+            int blueScore,
+            Runnable back,
+            Runnable rematch) {
+        String[] parts = (result == null ? "DRAW|" : result).split("\\|", 2);
+        String winner = parts[0], reason = parts.length > 1 ? parts[1] : "";
+        boolean spectator = "SPECTATOR".equals(ownColor),
+                draw = "DRAW".equals(winner),
+                win = winner.equals(ownColor);
+        String title =
+                spectator
+                        ? (draw
+                                ? "Ván đấu hòa"
+                                : ("RED".equals(winner) ? "Đỏ chiến thắng" : "Xanh chiến thắng"))
+                        : draw ? "Ván đấu hòa" : win ? "Bạn chiến thắng" : "Ván đấu kết thúc";
+        JPanel root = new JPanel();
         root.setLayout(new BoxLayout(root, BoxLayout.Y_AXIS));
-        root.setBorder(BorderFactory.createEmptyBorder(24, 28, 24, 28));
-
-        // Trophy Icon với hào quang tròn
-        JPanel iconBadge = new JPanel() {
-            {
-                setPreferredSize(new Dimension(84, 84));
-                setMaximumSize(new Dimension(84, 84));
-                setOpaque(false);
-            }
-
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2 = (Graphics2D) g.create();
-                UITheme.applyQualityHints(g2);
-
-                Color glow = isWin ? new Color(254, 240, 138) : (isDraw ? new Color(254, 243, 199) : new Color(254, 226, 226));
-                g2.setColor(glow);
-                g2.fillOval(4, 4, 76, 76);
-
-                Color iconColor = isWin ? new Color(217, 119, 6) : (isDraw ? UITheme.DRAW_COLOR : UITheme.LOSS_COLOR);
-                Icon vecIcon = UITheme.createVectorIcon(isWin ? "trophy" : (isDraw ? "star" : "logout"), 42, iconColor);
-                vecIcon.paintIcon(this, g2, 21, 21);
-                g2.dispose();
-            }
-        };
-        iconBadge.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JLabel titleLabel = new JLabel(titleText, SwingConstants.CENTER);
-        titleLabel.setFont(new Font(UITheme.FONT_FAMILY, Font.BOLD, 22));
-        titleLabel.setForeground(titleColor);
-        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        String reasonText = switch (rawReason) {
-            case "TURNS_FINISHED" -> "Hết 50 lượt thi đấu";
-            case "BOARD_FULL" -> "Bàn cờ đã đầy";
-            case "SURRENDER" -> isWin ? "Đối thủ đã xin thua" : "Bạn đã xin thua";
-            case "LEAVE_GAME" -> isWin ? "Đối thủ đã thoát trận" : "Bạn đã thoát trận";
-            default -> rawReason.isBlank() ? "Trận đấu đã kết thúc" : rawReason;
-        };
-        JLabel reasonLabel = new JLabel(reasonText, SwingConstants.CENTER);
-        reasonLabel.setFont(new Font(UITheme.FONT_FAMILY, Font.PLAIN, 13));
-        reasonLabel.setForeground(UITheme.TEXT_MUTED);
-        reasonLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        // Thẻ so sánh điểm
-        UITheme.RoundedPanel scoreCard = new UITheme.RoundedPanel(16, new Color(248, 250, 252), UITheme.BORDER, 1);
-        scoreCard.setLayout(new GridLayout(1, 2, 16, 0));
-        scoreCard.setBorder(BorderFactory.createEmptyBorder(12, 16, 12, 16));
-        scoreCard.setMaximumSize(new Dimension(380, 100));
-
-        boolean iAmRed = "RED".equals(ownColor);
-        int myScore = iAmRed ? redScore : blueScore;
-        int oppScore = iAmRed ? blueScore : redScore;
-
-        scoreCard.add(createScoreBlock("Bạn (1P)", myScore, UITheme.PIECE_RED, isWin));
-        scoreCard.add(createScoreBlock("Đối thủ (2P)", oppScore, UITheme.PIECE_BLUE, !isWin && !isDraw));
-
-        // Rank points badge
-        JLabel rankBadge = new JLabel((isWin ? "+1.0" : (isDraw ? "+0.5" : "+0.0")) + " điểm xếp hạng",
-                UITheme.createVectorIcon("star", 16, UITheme.DRAW_COLOR), SwingConstants.CENTER);
-        rankBadge.setIconTextGap(6);
-        rankBadge.setFont(new Font(UITheme.FONT_FAMILY, Font.BOLD, 15));
-        rankBadge.setForeground(UITheme.DRAW_COLOR);
-        rankBadge.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        // Buttons row
-        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.CENTER, 14, 0));
-        buttons.setOpaque(false);
-        buttons.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        UITheme.SmoothButton playAgain = new UITheme.SmoothButton(
-                "Chơi tiếp", UITheme.PRIMARY, UITheme.PRIMARY_DARK, UITheme.PRIMARY_DARK, 12);
-        UITheme.SmoothButton backLobby = new UITheme.SmoothButton(
-                "Về sảnh", new Color(226, 232, 240), new Color(203, 213, 225), new Color(148, 163, 184), 12);
-        backLobby.setForeground(UITheme.TEXT_PRIMARY);
-
-        playAgain.setPreferredSize(new Dimension(140, 42));
-        backLobby.setPreferredSize(new Dimension(110, 42));
-
-        playAgain.addActionListener(e -> {
-            SoundManager.playClick();
-            rematchAccepted = true;
-            dispose();
-        });
-        backLobby.addActionListener(e -> {
-            SoundManager.playClick();
-            rematchAccepted = false;
-            dispose();
-        });
-
-        buttons.add(playAgain);
-        buttons.add(backLobby);
-
-        root.add(iconBadge);
-        root.add(Box.createVerticalStrut(4));
-        root.add(titleLabel);
-        root.add(Box.createVerticalStrut(2));
-        root.add(reasonLabel);
-        root.add(Box.createVerticalStrut(14));
-        root.add(scoreCard);
+        root.setBackground(UITheme.BG_CARD);
+        root.setBorder(BorderFactory.createEmptyBorder(28, 28, 28, 28));
+        String emblemId =
+                draw ? "emblem.draw" : spectator || win ? "emblem.victory" : "emblem.defeat";
+        JComponent emblem =
+                new JComponent() {
+                    @Override
+                    protected void paintComponent(Graphics graphics) {
+                        Graphics2D g = (Graphics2D) graphics.create();
+                        UITheme.applyQualityHints(g);
+                        SpriteCatalog.draw(g, emblemId, 4, 4, 88, 88);
+                        g.dispose();
+                    }
+                };
+        emblem.setPreferredSize(new Dimension(96, 96));
+        emblem.setMaximumSize(new Dimension(96, 96));
+        emblem.setAlignmentX(Component.CENTER_ALIGNMENT);
+        root.add(emblem);
         root.add(Box.createVerticalStrut(12));
-        root.add(rankBadge);
-        root.add(Box.createVerticalStrut(18));
-        root.add(buttons);
-
-        setContentPane(root);
+        JLabel caption = new JLabel("KẾT QUẢ");
+        caption.setFont(UITheme.FONT_SMALL_B);
+        caption.setForeground(UITheme.TEXT_MUTED);
+        JLabel heading = new JLabel(title);
+        heading.setFont(UITheme.FONT_TITLE);
+        heading.setForeground(win || draw ? UITheme.DRAW_COLOR : UITheme.TEXT_PRIMARY);
+        JLabel explanation = new JLabel(reason.isBlank() ? "Trận đấu đã kết thúc" : reason);
+        explanation.setFont(UITheme.FONT_SMALL);
+        explanation.setForeground(UITheme.TEXT_MUTED);
+        JPanel scores = new JPanel(new GridLayout(1, 2, 24, 0));
+        scores.setOpaque(false);
+        boolean red = "RED".equals(ownColor);
+        scores.add(
+                score(
+                        spectator ? username : red ? username + " (bạn)" : opponent,
+                        redScore,
+                        UITheme.PIECE_RED));
+        scores.add(
+                score(
+                        spectator ? opponent : red ? opponent : username + " (bạn)",
+                        blueScore,
+                        UITheme.PIECE_BLUE));
+        for (JComponent c : new JComponent[] {caption, heading, explanation}) {
+            c.setAlignmentX(Component.CENTER_ALIGNMENT);
+            root.add(c);
+            root.add(Box.createVerticalStrut(10));
+        }
+        root.add(Box.createVerticalStrut(8));
+        root.add(scores);
+        root.add(Box.createVerticalStrut(24));
+        JLabel info =
+                new JLabel(
+                        spectator
+                                ? "Bạn đang xem trận đấu."
+                                : draw
+                                        ? "+0.5 điểm xếp hạng"
+                                        : win ? "+1.0 điểm xếp hạng" : "+0.0 điểm xếp hạng");
+        info.setFont(UITheme.FONT_SMALL);
+        info.setForeground(UITheme.TEXT_MUTED);
+        info.setAlignmentX(Component.CENTER_ALIGNMENT);
+        root.add(info);
+        JLabel readiness = new JLabel("Hai người chơi chưa chọn đấu lại.");
+        readiness.setFont(UITheme.FONT_SMALL);
+        readiness.setForeground(UITheme.TEXT_MUTED);
+        readiness.setAlignmentX(Component.CENTER_ALIGNMENT);
+        root.putClientProperty("rematchStatus", readiness);
+        if (!spectator) {
+            root.add(Box.createVerticalStrut(10));
+            root.add(readiness);
+        }
+        root.add(Box.createVerticalStrut(20));
+        JPanel actions = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 0));
+        actions.setOpaque(false);
+        actions.add(UITheme.secondaryButton("Về sảnh", back));
+        if (!spectator) {
+            JButton rematchButton = UITheme.createGradientButton("Đấu lại", 140, 40);
+            rematchButton.addActionListener(
+                    e -> {
+                        rematch.run();
+                        SoundManager.playClick();
+                    });
+            actions.add(rematchButton);
+        }
+        root.add(actions);
+        return root;
     }
 
-    private JPanel createScoreBlock(String label, int score, Color color, boolean highlight) {
-        JPanel block = new JPanel();
-        block.setLayout(new BoxLayout(block, BoxLayout.Y_AXIS));
-        block.setOpaque(false);
+    static String readiness(String ownColor, RematchStatus state) {
+        if (state.closed()) return state.reason();
+        boolean own = "RED".equals(ownColor) ? state.redAccepted() : state.blueAccepted();
+        boolean peer = "RED".equals(ownColor) ? state.blueAccepted() : state.redAccepted();
+        return "Bạn: "
+                + (own ? "sẵn sàng" : "chưa chọn")
+                + " · Đối thủ: "
+                + (peer ? "sẵn sàng" : "chưa chọn");
+    }
 
-        JLabel lbl = new JLabel(label, SwingConstants.CENTER);
-        lbl.setFont(new Font(UITheme.FONT_FAMILY, Font.PLAIN, 12));
-        lbl.setForeground(UITheme.TEXT_MUTED);
-        lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
+    static void updateReadiness(JPanel root, String ownColor, RematchStatus state) {
+        if (root != null && root.getClientProperty("rematchStatus") instanceof JLabel label)
+            label.setText(readiness(ownColor, state));
+    }
 
-        JLabel val = new JLabel(String.valueOf(score), SwingConstants.CENTER);
-        val.setFont(new Font(UITheme.FONT_FAMILY, Font.BOLD, 26));
-        val.setForeground(highlight ? color : UITheme.TEXT_PRIMARY);
-        val.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JLabel unit = new JLabel("Quân", SwingConstants.CENTER);
-        unit.setFont(new Font(UITheme.FONT_FAMILY, Font.PLAIN, 12));
+    private static JPanel score(String name, int value, Color tint) {
+        JPanel p = new JPanel();
+        p.setOpaque(false);
+        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+        JLabel label = new JLabel(name);
+        label.setFont(UITheme.FONT_BODY_BOLD);
+        JLabel number = new JLabel(Integer.toString(value));
+        number.setFont(new Font(UITheme.FONT_FAMILY, Font.BOLD, 40));
+        number.setForeground(tint);
+        JLabel unit = new JLabel("ô lãnh thổ");
         unit.setForeground(UITheme.TEXT_MUTED);
-        unit.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        block.add(lbl);
-        block.add(val);
-        block.add(unit);
-        return block;
+        unit.setFont(UITheme.FONT_SMALL);
+        for (JComponent c : new JComponent[] {label, number, unit}) {
+            c.setAlignmentX(Component.CENTER_ALIGNMENT);
+            p.add(c);
+        }
+        return p;
     }
 }

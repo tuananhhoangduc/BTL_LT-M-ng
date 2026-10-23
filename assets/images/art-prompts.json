@@ -1,0 +1,97 @@
+{
+  "generator": "Built-in image_gen",
+  "date": "2026-10-23",
+  "reference": "docs/concepts/sac-tran-art-sheet-v2.png",
+  "assets": [
+    {
+      "id": "piece_red",
+      "prompt": "Use case: stylized-concept. Production 2D puzzle game PNG asset for Sac Tran. The attached image is a STYLE REFERENCE ONLY, not a target to reproduce as a sheet. Match its restrained painted faceted-glass and ceramic materials, coral red/ice blue palette, upper-left light. Clean readable silhouette at small sizes. Absolutely no text, logos, border framing, watermark, UI panels or sprite sheet. Generate exactly ONE coral red crystal token, rounded octagonal outline, front-facing orthographic, slight raised bevel, beautiful clear glass facets, crisp restrained highlight. Centered, occupying 84% of square canvas with equal padding. Genuine transparent outside alpha. No ground plane, pedestal, contact shadow outside the silhouette, backdrop, particles, halo or glow. This is the large red master token from the reference, recreated as an individual production sprite, not the blue token.",
+      "transparent_background": true,
+      "references": [
+        "docs/concepts/sac-tran-art-sheet-v2.png"
+      ],
+      "file": "pieces/red.png"
+    },
+    {
+      "id": "tile_neutral",
+      "prompt": "Use case: stylized-concept. Production 2D puzzle game PNG asset for Sac Tran. The attached image is a STYLE REFERENCE ONLY, not a target to reproduce as a sheet. Match its restrained painted faceted-glass and ceramic materials, coral red/ice blue palette, upper-left light. Clean readable silhouette at small sizes. Absolutely no text, logos, border framing, watermark, UI panels or sprite sheet. Generate exactly ONE square dark desaturated navy ceramic board tile. Straight front orthographic view, slightly rounded corners, subtle narrow beveled rim, fine restrained ceramic surface texture. Clearly square, not trapezoid. Occupies 96% of square canvas with 2% equal transparent padding on each edge, actual alpha around rounded corners. No symbol, token, pattern, decorative border or drop shadow outside silhouette. Render just the center neutral tile from reference as one production tile.",
+      "transparent_background": true,
+      "references": [
+        "docs/concepts/sac-tran-art-sheet-v2.png"
+      ],
+      "file": "tiles/neutral.png"
+    },
+    {
+      "id": "bg_arena",
+      "prompt": "Use case: stylized-concept. Production 2D puzzle game PNG asset for Sac Tran. The attached image is a STYLE REFERENCE ONLY, not a target to reproduce as a sheet. Match its restrained painted faceted-glass and ceramic materials, coral red/ice blue palette, upper-left light. Clean readable silhouette at small sizes. Absolutely no text, logos, border framing, watermark, UI panels or sprite sheet. Generate a wide landscape 16:9 arena BACKGROUND ONLY, no game board or UI. Quiet dark navy matte ceramic surface through the central 75% of image, very subtle variation. Faceted blue crystalline outcrops at extreme left and right margins only, a small coral mineral accent near one bottom corner. Painted low-detail environmental art as in the small scene in reference, but no physical board, floor grids, columns, stairs, throne, portal, architecture, stars or focal bright light. Lively yet calm gaming atmosphere, not ominous. Art must stay behind the interface and not compete with it.",
+      "transparent_background": false,
+      "references": [
+        "docs/concepts/sac-tran-art-sheet-v2.png"
+      ],
+      "file": "backgrounds/arena.png"
+    },
+    {
+      "id": "bg_login",
+      "prompt": "Use case: stylized-concept. Production 2D puzzle game PNG asset for Sac Tran. The attached image is a STYLE REFERENCE ONLY, not a target to reproduce as a sheet. Match its restrained painted faceted-glass and ceramic materials, coral red/ice blue palette, upper-left light. Clean readable silhouette at small sizes. Absolutely no text, logos, border framing, watermark, UI panels or sprite sheet. Generate a portrait 2:3 game login background ONLY. Painted faceted crystal formations along lower-left and lower-right outer edges, ice blue with restrained coral accents, navy satin ceramic dark background, top 55% spacious and nearly empty for overlay typography. Clear expressive mineral shapes and same material as the reference. No typography, logo, game board, UI, human, physical pedestal, skyline or busy detail. Keep center low contrast and peaceful, not spooky, no glows or beams.",
+      "transparent_background": false,
+      "references": [
+        "docs/concepts/sac-tran-art-sheet-v2.png"
+      ],
+      "file": "backgrounds/login.png"
+    },
+    {
+      "id": "piece_blue",
+      "prompt": "Production game sprite edit. The reference is the RED MASTER token. Make its blue counterpart: change coral to ice blue and the outline to a clean symmetric diamond (square rotated 45 degrees) like the approved concept. Preserve front-facing orthographic view, similar visual mass, centered position, canvas square size, equal padding, bevel depth, painted clear-glass material, crisp top-left highlights and rendering quality. Genuine transparent background and outside edges. One piece only. No pedestal, floor shadow, glow, text or sheet.",
+      "transparent_background": true,
+      "references": [
+        "assets\\images\\pieces\\red.png"
+      ],
+      "file": "pieces/blue.png"
+    },
+    {
+      "id": "tile_red",
+      "prompt": "Edit this exact neutral ceramic game tile into the RED CLAIMED TERRITORY tile. Preserve the exact square front-facing silhouette, corner radii, same canvas and padding, bevel depth, tiny surface texture, lighting, and true outside alpha. Change surface to muted dusty coral ceramic, not luminous or candy-red. Add three thin subtly recessed parallel diagonal grooves across the center. Same material and tone depth as original. No token, text, glow or other objects. Exactly one tile.",
+      "transparent_background": true,
+      "references": [
+        "assets\\images\\tiles\\neutral.png"
+      ],
+      "file": "tiles/red_area.png"
+    },
+    {
+      "id": "tile_blue",
+      "prompt": "Edit this exact neutral ceramic game tile into the BLUE CLAIMED TERRITORY tile. Preserve exact square front-facing silhouette, corner radii, same canvas and padding, bevel depth, tiny surface texture, lighting, and true outside alpha. Change surface to muted desaturated ice blue ceramic, not luminous. Add a simple recessed cross dividing the tile into four squares. Same material and tone depth as original. No token, text, glow or other objects. Exactly one tile.",
+      "transparent_background": true,
+      "references": [
+        "assets\\images\\tiles\\neutral.png"
+      ],
+      "file": "tiles/blue_area.png"
+    },
+    {
+      "id": "emblem_victory",
+      "prompt": "Use case stylized-concept. Reference is a STYLE REFERENCE for a game emblem. Generate exactly ONE small victory emblem for this red-vs-blue crystal puzzle game: two balanced faceted coral and ice-blue crystals angled slightly outward like a compact crest, with ONE tiny pale warm-metal four-point star above them. Same painted glass material and top-left lighting as reference tokens. Balanced clean silhouette, no crown, no gold trophy, no wreath, no frame, no text, no particles, no backdrop or pedestal. Entire artwork centered with 12% equal safe padding on square canvas, genuine transparent outside alpha. Readable at 64px.",
+      "transparent_background": true,
+      "references": [
+        "docs\\concepts\\sac-tran-art-sheet-v2.png"
+      ],
+      "file": "emblems/victory.png"
+    },
+    {
+      "id": "emblem_draw",
+      "prompt": "Use case stylized-concept. Reference is STYLE REFERENCE. Generate exactly ONE small draw-result emblem for this game: one coral rounded octagonal crystal and one ice-blue diamond of equal size side by side, touching at one edge, visually balanced equally important. Same painted glass material, chunky bevel, top-left light, fine outline as large reference tokens. No star, no gold, no pedestal, no backdrop, no frame, no text or particles. Square canvas, centered emblem with 12% equal safe padding, genuine transparent outside alpha. Readable at 64px.",
+      "transparent_background": true,
+      "references": [
+        "docs\\concepts\\sac-tran-art-sheet-v2.png"
+      ],
+      "file": "emblems/draw.png"
+    },
+    {
+      "id": "emblem_defeat",
+      "prompt": "Use case stylized-concept. Reference is STYLE REFERENCE. Generate exactly ONE small defeat-result emblem for this crystal puzzle game: a single quiet desaturated blue-gray faceted crystal, rounded diamond outline, one small detached facet beside it, intact and dignified rather than violent. Same painted glass material, bevel depth and upper-left lighting as reference tokens but lower saturation and gentle contrast. No skull, no blood, no red X, no frame, no crown, no text, no pedestal or backdrop. Square canvas, centered with 12% safe padding, genuine transparent outside alpha. Readable at 64px.",
+      "transparent_background": true,
+      "references": [
+        "docs\\concepts\\sac-tran-art-sheet-v2.png"
+      ],
+      "file": "emblems/defeat.png"
+    }
+  ]
+}

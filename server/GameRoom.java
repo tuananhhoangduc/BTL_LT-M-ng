@@ -1,9 +1,14 @@
 package server;
 
 import common.BoardState;
+import common.CaptureRay;
 import common.MessageType;
 import common.NetworkMessage;
+import common.RematchStatus;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 
@@ -18,6 +23,10 @@ final class GameRoom {
     private final List<ClientSession> spectators = new CopyOnWriteArrayList<>();
     private final int[][] board = new int[SIZE][SIZE];
     private final int[][] areas = new int[SIZE][SIZE];
+    private String matchId = UUID.randomUUID().toString();
+    private long moveSequence;
+    private int moveRow = -1, moveColumn = -1, moveColor;
+    private List<CaptureRay> captureRays = List.of();
     private ScheduledFuture<?> timerTask;
     private int currentColor = 1;
     private int turnsRemaining = TOTAL_TURNS;
@@ -78,13 +87,19 @@ final class GameRoom {
 
     synchronized void move(ClientSession player, int row, int column) {
         if (finished || playerColor(player) != currentColor) {
-            player.error("Không phải lượt của bạn hoặc ván đã kết thúc");
+            rejectMove(player, "Không phải lượt của bạn hoặc ván đã kết thúc");
             return;
         }
-        if (!GameRules.applyMove(board, areas, currentColor, row, column)) {
-            player.error("Nước đi không hợp lệ");
+        List<CaptureRay> rays = new ArrayList<>();
+        if (!GameRules.applyMove(board, areas, currentColor, row, column, rays)) {
+            rejectMove(player, "Nước đi không hợp lệ. Chọn ô trống hoặc vùng của bạn.");
             return;
         }
+        moveSequence++;
+        moveRow = row;
+        moveColumn = column;
+        moveColor = currentColor;
+        captureRays = List.copyOf(rays);
         turnsRemaining--;
         cancelTimer();
         if (turnsRemaining == 0) {
@@ -100,12 +115,18 @@ final class GameRoom {
         }
     }
 
+    private void rejectMove(ClientSession player, String reason) {
+        NetworkMessage message = NetworkMessage.of(MessageType.MOVE_REJECTED);
+        message.text = reason;
+        player.send(message);
+    }
+
     synchronized void leave(ClientSession player) {
         if (player == red || player == blue) {
             if (!finished) {
                 finish(player == red ? "BLUE" : "RED", player.username() + " thoát giữa chừng");
             }
-            closeAfterRematch();
+            closeAfterRematch(player.username() + " đã rời phòng đấu.");
         } else if (spectators.contains(player)) {
             removeSpectator(player);
         }
@@ -137,8 +158,10 @@ final class GameRoom {
     }
 
     private void scheduleTimer() {
-        timerTask = server.scheduler().scheduleAtFixedRate(this::onTimeout, 1, 1,
-                java.util.concurrent.TimeUnit.SECONDS);
+        timerTask =
+                server.scheduler()
+                        .scheduleAtFixedRate(
+                                this::onTimeout, 1, 1, java.util.concurrent.TimeUnit.SECONDS);
     }
 
     private void cancelTimer() {
@@ -167,7 +190,7 @@ final class GameRoom {
     }
 
     synchronized void rematch(ClientSession player, boolean accepted) {
-        if (!finished) {
+        if (!finished || (player != red && player != blue)) {
             return;
         }
         if (player == red) {
@@ -177,17 +200,26 @@ final class GameRoom {
         }
         if (player == red || player == blue) {
             NetworkMessage acknowledgement = NetworkMessage.of(MessageType.REMATCH_RESULT);
-            acknowledgement.text = accepted ? "Đã ghi nhận đồng ý đấu lại" : "Đã ghi nhận từ chối đấu lại";
+            acknowledgement.text =
+                    accepted ? "Đã ghi nhận đồng ý đấu lại" : "Đã ghi nhận từ chối đấu lại";
             player.send(acknowledgement);
         }
         if (redRematch && blueRematch) {
+            broadcastRematchStatus(false, "Hai người chơi đã sẵn sàng.");
             resetForRematch();
         } else if ((player == red && !accepted) || (player == blue && !accepted)) {
-            closeAfterRematch();
+            closeAfterRematch(player.username() + " không đấu lại.");
+        } else {
+            broadcastRematchStatus(false, "Đang chờ người chơi còn lại.");
         }
     }
 
     private void resetForRematch() {
+        matchId = UUID.randomUUID().toString();
+        moveSequence = 0;
+        moveRow = moveColumn = -1;
+        moveColor = 0;
+        captureRays = List.of();
         for (int row = 0; row < SIZE; row++) {
             java.util.Arrays.fill(board[row], 0);
             java.util.Arrays.fill(areas[row], 0);
@@ -216,9 +248,16 @@ final class GameRoom {
         scheduleTimer();
     }
 
-    private void closeAfterRematch() {
+    private void broadcastRematchStatus(boolean closed, String reason) {
+        NetworkMessage status = NetworkMessage.of(MessageType.REMATCH_STATUS);
+        status.payload = new RematchStatus(matchId, redRematch, blueRematch, closed, reason);
+        broadcast(status);
+    }
+
+    private void closeAfterRematch(String reason) {
+        broadcastRematchStatus(true, reason);
         NetworkMessage message = NetworkMessage.of(MessageType.REMATCH_RESULT);
-        message.text = "Ván đấu đã kết thúc vì một người không muốn đấu lại";
+        message.text = reason;
         broadcast(message);
         for (ClientSession spec : spectators) {
             spec.setRoom(null);
@@ -280,9 +319,20 @@ final class GameRoom {
     }
 
     private BoardState snapshot() {
-        return new BoardState(board, turnsRemaining, secondsRemaining,
+        return new BoardState(
+                board,
+                areas,
+                turnsRemaining,
+                secondsRemaining,
                 currentColor == 1 ? "RED" : "BLUE",
-                GameRules.count(areas, 3), GameRules.count(areas, 4));
+                GameRules.count(areas, 3),
+                GameRules.count(areas, 4),
+                matchId,
+                moveSequence,
+                moveRow,
+                moveColumn,
+                moveColor,
+                captureRays);
     }
 
     private int playerColor(ClientSession player) {

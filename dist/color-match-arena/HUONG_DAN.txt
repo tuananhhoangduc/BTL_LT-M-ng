@@ -1,0 +1,21 @@
+COLOR MATCH ARENA 2.2
+
+QUAN TRONG: Khoi dong lai ca server va moi client bang ban 2.2 (protocol 3).
+Khong dung lan voi JAR 2.1. Tai khoan/database va volume da luu van duoc giu.
+
+JDK 24. Mo Chay_Game.bat. Asset PNG va nhac da nam trong JAR.
+Khong can MySQL tren may chi choi client.
+
+Hai may cung Wi-Fi: server chay Chay_Server.bat trong repo.
+Client tren server dung Host 127.0.0.1 / cong 5000.
+Client tren laptop khac dung IPv4 Wi-Fi cua server / cong 5000.
+Dang nhap hai tai khoan khac nhau de thach dau.
+
+Tile graphite: chua bi chiem. Coral + soc cheo: phe Do.
+Tile cobalt + hoa tiet hinh thoi: phe Xanh. Quan tinh the sang nam tren tile.
+Vien dut + ghost: dang gui nuoc di, chua phai ket qua server xac nhan.
+Vien tinh: nuoc vua di. Tia chay tu tam server, dung truoc quan doi thu.
+Dau lai: trang thai san sang cua ca hai nguoi do server xac nhan.
+
+Ten game giu tieng Anh Color Match Arena; nut/huong dan van dung tieng Viet.
+Cai dat: volume nhac/SFX, mute, giam chuyen dong, Cach choi va Credits.

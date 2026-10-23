@@ -1,0 +1,23 @@
+COLOR MATCH ARENA — PRISM
+
+Yeu cau: JDK 24. Dat JAVA_HOME tro toi thu muc JDK neu may dang dung Java 8.
+Mo Chay_Game.bat. Thu muc nay da du assets va am thanh trong file JAR.
+Khong can MySQL, Python hay source code tren may chi choi client.
+
+Hai laptop chung Wi-Fi:
+1. May chu chay Chay_Server.bat o thu muc repo, voi MySQL da cau hinh.
+2. May chu dung ipconfig de lay dia chi IPv4 Wi-Fi.
+3. Client tren may chu: Host 127.0.0.1, Cong 5000.
+4. Client tren may khac: Host la IPv4 cua may chu, Cong 5000.
+5. Dang nhap hai tai khoan khac nhau, vao sanh va thach dau.
+6. Cho phep Java qua Firewall tren mang Private neu can.
+
+Server va tat ca client phai dung cung ban Prism nay.
+Ban JAR cu o dist/ goc khong tuong thich voi giao thuc BoardState moi.
+
+Cai dat: nut Cai dat trong login/sanh/tran de chinh nhac, hieu ung,
+tat am thanh hoac giam chuyen dong. Lua chon duoc luu tren tung may.
+
+Ban co: di chuot de xem quan thu; phim mui ten va Enter/Space de dat quan.
+Noi tu 3 quan ngang/doc/cheo se tao tia, tia dung truoc quan doi thu.
+Diem la so o lanh tho, khong phai so quan dang tren ban.
