@@ -43,7 +43,20 @@ Lệnh: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Test.ps1 -S
 - Chạy lại AssetChecks/PresentationChecks từ thư mục TEMP riêng, chỉ dùng tests + JAR:
   đủ PNG/WAV và kiểm tra presentation đều PASS, không dựa vào thư mục assets trong repo.
 - ZIP đã kiểm tra chứa đúng JAR vừa build, cùng launcher và hướng dẫn 2.2.
-  SHA256 ZIP: `3EBC772C588B46B5C3B22EAE3910094B1E7E9D3EA46F9752532399BBA461AEE1`.
+  SHA256 ZIP sau audio hotfix: `7EA259BBCF40FA0ECC8B5F1B32A6C4990226EEC5DD33CF779760E84C47388BFC`.
+
+### Audio hotfix — hai client cùng máy
+
+Windows Preferences dùng chung theo tài khoản Windows. Trước hotfix, mixer đọc trực
+tiếp Preferences mỗi lần cập nhật nên mute/volume từ client này lan sang client khác.
+`SessionSettings` nạp giá trị đã lưu một lần, giữ trạng thái riêng trong JVM với
+visibility cho luồng audio; thay đổi vẫn lưu từng key làm mặc định cho lần mở sau.
+Hai client đang chạy không áp dụng thay đổi từ nhau. Nhãn mute đổi thành “Tắt âm thanh
+client này”. Không đổi protocol/server; đóng mở lại các client để nhận bản sửa.
+
+`SettingsChecks` dùng node tạm riêng kiểm tra hai session cùng backing store:
+mute/unmute, ba volume, reduced motion không lan; session mới nạp đúng giá trị đã lưu;
+volume vẫn trong 0–100. Toàn bộ `scripts/Test.ps1` PASS sau hotfix.
 
 Ảnh là Swing render thực từ fixture, không phải concept:
 

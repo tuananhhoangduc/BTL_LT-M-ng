@@ -68,7 +68,7 @@ final class SettingsDialog {
             control.add(percentage, BorderLayout.EAST);
             root.add(control, c);
         }
-        JCheckBox mute = new JCheckBox("Tắt toàn bộ âm thanh", ClientSettings.muted());
+        JCheckBox mute = new JCheckBox("Tắt âm thanh client này", ClientSettings.muted());
         mute.addActionListener(
                 e -> {
                     ClientSettings.flag("muted", mute.isSelected());

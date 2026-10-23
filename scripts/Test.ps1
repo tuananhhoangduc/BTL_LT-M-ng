@@ -8,6 +8,8 @@ New-Item -ItemType Directory -Path $testClasses -Force | Out-Null
 $tests = @(Get-ChildItem "$projectRoot\tests" -Recurse -Filter *.java -File | ForEach-Object FullName)
 & "$env:JAVA_HOME\bin\javac.exe" -encoding UTF-8 -cp $classes -d $testClasses $tests
 if ($LASTEXITCODE -ne 0) { throw 'Test compilation failed.' }
+& "$env:JAVA_HOME\bin\java.exe" -cp "$testClasses;$classes" client.SettingsChecks
+if ($LASTEXITCODE -ne 0) { throw 'Settings isolation checks failed.' }
 & "$env:JAVA_HOME\bin\java.exe" -cp "$testClasses;$classes" server.RulesChecks
 if ($LASTEXITCODE -ne 0) { throw 'Rules checks failed.' }
 & "$env:JAVA_HOME\bin\java.exe" -cp "$testClasses;$classes" server.RoomChecks
